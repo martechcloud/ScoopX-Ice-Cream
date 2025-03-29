@@ -9,7 +9,7 @@
       <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="viewport" content="initial-scale=1, maximum-scale=1">
       <!-- site metas -->
-      <title>ScoopX</title>
+      <title>Contact</title>
       <meta name="keywords" content="">
       <meta name="description" content="">
       <meta name="author" content="">
@@ -33,6 +33,11 @@
          <div class="container">
          </div>
       </div>
+
+      <div id="loader" style="display: none;">
+         <p>Loading...</p>
+      </div>
+
       <!-- header section end -->
       <!-- contact section start -->
       <div class="contact_section layout_padding">
@@ -74,16 +79,13 @@
                   <div class="mail_main">
                      <h3 class="newsletter_text">Check Previously Generated Code</h3>
                      <div class="form-group">
-                        <textarea class="update_mail" placeholder="Enter Your Phone Number" rows="5" id="comment" name="Enter Your Email"></textarea>
-                        <div class="subscribe_bt"><a href="#" >Get Code</a></div>
+                        <input type="text" class="email-bt" placeholder="Phone Numbar" name="Email" id="phone2">
+                        <div class="subscribe_bt"><a href="#" id = "submitBtn2">Get Code</a></div>
                      </div>
                   </div>
                   <div class="footer_social_icon">
                      <ul>
-                        <li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-                        <li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-                        <li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
-                        <li><a href="#"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
+                        <li><a href="https://www.instagram.com/scoopx.official/"><i class="fa fa-instagram" aria-hidden="true"></i></a></li>
                      </ul>
                   </div>
                </div>
@@ -104,6 +106,7 @@
             
             let name = document.getElementById("name").value.trim();
             let phone = document.getElementById("phone").value.trim();
+            let loader = document.getElementById("loader");
       
             if (name === "" || phone === "") {
                Swal.fire("Please fill all required fields!");
@@ -114,31 +117,93 @@
             if (!phoneRegex.test(phone)) {
                Swal.fire({
                icon: "error",
-               title: "Please enter a valid phone number.",
+               title: "Please enter a valid 10 digit phone number.",
                });
                return;
             }
+
+            loader.style.display = "block";
       
             let url = new URL("https://script.google.com/macros/s/AKfycbykizqHXQJ0jQ5xLRQXxFMlfMWc09JPZWemDLWp-J5tCWWsjyEuBXzxzyboMVIjl8hS/exec"); // Replace with your script URL
             url.searchParams.append("Name", name);
             url.searchParams.append("Phone", phone);
+            url.searchParams.append("usecase", "generate");
       
             fetch(url)
             .then(response => response.json())
             .then(data => {
                Swal.fire({
-               title: data.message,
-               text: "Your Code Is " + data.code,
-               icon: "success",
-               draggable: true
+                  title: data.message,
+                  text: "Your Code Is " + data.code,
+                  icon: "success",
+                  draggable: true
                });
             })
             .catch(error => {
                console.error("Error:", error);
                Swal.fire({
-               icon: "error",
-               title: "Something went wrong. Try again.",
+                  icon: "error",
+                  title: "Something went wrong. Try again.",
                });
+            })
+            .finally(() => {
+               // Hide the loader after the response is received
+               loader.style.display = "none";
+               document.getElementById("name").value = "";
+               document.getElementById("phone").value = "";
+            });
+         });
+      </script>
+
+
+      <script>
+         document.getElementById("submitBtn2").addEventListener("click", function(event) {
+            event.preventDefault(); // Prevent default link behavior
+            
+            let phone = document.getElementById("phone2").value.trim();
+            let loader = document.getElementById("loader");
+
+            if (phone === "") {
+               Swal.fire("Please enter phone number!");
+               return;
+            }
+
+            let phoneRegex = /^[0-9]{10}$/;
+            if (!phoneRegex.test(phone)) {
+               Swal.fire({
+               icon: "error",
+               title: "Please enter a valid 10 digit phone number.",
+               });
+               return;
+            }
+
+            loader.style.display = "block";
+
+            let url = new URL("https://script.google.com/macros/s/AKfycbykizqHXQJ0jQ5xLRQXxFMlfMWc09JPZWemDLWp-J5tCWWsjyEuBXzxzyboMVIjl8hS/exec"); // Replace with your script URL
+            url.searchParams.append("Phone", phone);
+            url.searchParams.append("usecase", "fetch");
+
+            fetch(url)
+            .then(response => response.json())
+            .then(data => {
+               Swal.fire({
+                  title: data.message,
+                  text: "Your Code Is " + data.code,
+                  icon: "success",
+                  draggable: true
+               });
+            })
+            .catch(error => {
+               console.error("Error:", error);
+               Swal.fire({
+                  icon: "error",
+                  title: "Something went wrong. Try again.",
+               });
+            })
+            .finally(() => {
+               // Hide the loader after the response is received
+               loader.style.display = "none";
+               document.getElementById("phone2").value = "";
             });
          });
       </script>
