@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TV Video Wall</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: row;
+      height: 100%;
+      width: 100%;
+    }
+
+    .video-column {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="video-column"><video autoplay muted></video></div>
+    <div class="video-column"><video autoplay muted></video></div>
+    <div class="video-column"><video autoplay muted></video></div>
+  </div>
+
+  <script>
+    const videoSources = [
+      "sahilv3.mp4",
+      "sahilv.mp4",
+      "sahilv4.mp4",
+      "sahilv2.mp4"
+    ];
+
+    function getRandomVideo(exclude) {
+      let src;
+      do {
+        src = videoSources[Math.floor(Math.random() * videoSources.length)];
+      } while (src === exclude);
+      return src;
+    }
+
+    function getRandomSegment(duration) {
+      const segments = [
+        { label: "last 10 sec", start: duration - 10 },
+        { label: "middle 5 sec", start: duration / 2 - 2.5 },
+        { label: "middle 20 sec", start: duration / 2 - 10 },
+        { label: "start 15 sec", start: 0 }
+      ];
+
+      const valid = segments.filter(s => s.start >= 0 && s.start + 5 <= duration);
+      return valid[Math.floor(Math.random() * valid.length)];
+    }
+
+    function playRandomSegment(video, src) {
+      video.src = src;
+      video.load();
+      video.onloadedmetadata = () => {
+        const duration = video.duration;
+        const segment = getRandomSegment(duration);
+        video.currentTime = segment.start;
+        video.play();
+      };
+    }
+
+    document.querySelectorAll("video").forEach(video => {
+      // Initial play
+      let currentSrc = getRandomVideo();
+      playRandomSegment(video, currentSrc);
+      video.dataset.lastSrc = currentSrc;
+
+      // When ended, pick a new random video and play a random segment
+      video.addEventListener("ended", () => {
+        const newSrc = getRandomVideo(video.dataset.lastSrc);
+        video.dataset.lastSrc = newSrc;
+        playRandomSegment(video, newSrc);
+      });
+    });
+  </script>
+</body>
+</html>
