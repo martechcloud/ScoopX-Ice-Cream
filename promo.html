@@ -52,29 +52,7 @@
     </div>
   </div>
 
-  <!-- Background Music -->
-  <audio id="bg-music" src="YouTube.mp3" loop></audio>
-
   <script>
-    // Force audio play after any user interaction
-    const bgMusic = document.getElementById('bg-music');
-    bgMusic.volume = 0.5;
-
-    function enableAudio() {
-      bgMusic.play().then(() => {
-        console.log('Music started');
-      }).catch((err) => {
-        console.warn('Music play failed:', err);
-      });
-
-      document.removeEventListener('click', enableAudio);
-      document.removeEventListener('keydown', enableAudio);
-    }
-
-    // Attach listeners to start music
-    document.addEventListener('click', enableAudio);
-    document.addEventListener('keydown', enableAudio);
-
     const videoSources = ["sahilv3.mp4", "sahilv.mp4", "sahilv4.mp4", "sahilv2.mp4", "sahilv3.mp4", "sahilv.mp4", "sahilv4.mp4", "sahilv2.mp4"];
 
     function getRandomVideo(exclude) {
@@ -92,6 +70,7 @@
         { label: "middle 20 sec", start: duration / 2 - 10 },
         { label: "start 15 sec", start: 0 }
       ];
+
       const valid = segments.filter(s => s.start >= 0 && s.start + 5 <= duration);
       return valid[Math.floor(Math.random() * valid.length)];
     }
@@ -115,9 +94,10 @@
           current.style.opacity = 0;
           next.dataset.src = newSrc;
 
+          // Pause the old video after crossfade
           setTimeout(() => {
             current.pause();
-          }, 500);
+          }, 500); // match CSS transition
 
           active = 1 - active;
         };
@@ -125,6 +105,7 @@
         next.onended = switchVideo;
       }
 
+      // Initial setup
       videos[0].style.opacity = 1;
       videos[1].style.opacity = 0;
       const initialSrc = getRandomVideo();
