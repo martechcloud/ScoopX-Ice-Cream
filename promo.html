@@ -1,127 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TV Video Wall</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4K 43-inch TV Display - Vertical Split</title>
   <style>
-    html, body {
+    * {
       margin: 0;
       padding: 0;
-      background: black;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
       overflow: hidden;
-      height: 100vh;
-      width: 100vw;
     }
 
     .container {
       display: flex;
       flex-direction: row;
-      height: 100%;
-      width: 100%;
+      width: 100vw;
+      height: 100vh;
     }
 
-    .video-column {
+    .section {
       flex: 1;
-      position: relative;
       overflow: hidden;
+      position: relative;
     }
 
-    .video-column video {
-      position: absolute;
+    .section video, .section img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: opacity 0.5s ease-in-out;
+      display: block;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="video-column">
-      <video autoplay muted playsinline></video>
-      <video muted playsinline></video>
+    <!-- Left Section -->
+    <div class="section">
+      <video autoplay muted loop playsinline preload="auto">
+        <source src="Sahil T (1).mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
     </div>
-    <div class="video-column">
-      <video autoplay muted playsinline></video>
-      <video muted playsinline></video>
+
+    <!-- Center Section -->
+    <!-- Right Section -->
+    <div class="section">
+      <video autoplay muted loop playsinline preload="auto">
+        <source src="abc.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+      </video>
     </div>
-    <div class="video-column">
-      <video autoplay muted playsinline></video>
-      <video muted playsinline></video>
+
+    <div class="section">
+      <img src="scoopmenu.jpg" alt="Center Section Image">
     </div>
   </div>
-
-  <script>
-    const videoSources = ["sahilv3.mp4", "sahilv.mp4", "sahilv4.mp4", "sahilv2.mp4", "sahilv3.mp4", "sahilv.mp4", "sahilv4.mp4", "sahilv2.mp4"];
-
-    function getRandomVideo(exclude) {
-      let src;
-      do {
-        src = videoSources[Math.floor(Math.random() * videoSources.length)];
-      } while (src === exclude);
-      return src;
-    }
-
-    function getRandomSegment(duration) {
-      const segments = [
-        { label: "last 10 sec", start: duration - 10 },
-        { label: "middle 5 sec", start: duration / 2 - 2.5 },
-        { label: "middle 20 sec", start: duration / 2 - 10 },
-        { label: "start 15 sec", start: 0 }
-      ];
-
-      const valid = segments.filter(s => s.start >= 0 && s.start + 5 <= duration);
-      return valid[Math.floor(Math.random() * valid.length)];
-    }
-
-    function playVideoWithFade(container) {
-      const videos = container.querySelectorAll("video");
-      let active = 0;
-
-      function switchVideo() {
-        const current = videos[active];
-        const next = videos[1 - active];
-        const newSrc = getRandomVideo(current.dataset.src);
-        next.src = newSrc;
-        next.load();
-
-        next.onloadedmetadata = () => {
-          const segment = getRandomSegment(next.duration);
-          next.currentTime = segment.start;
-          next.play();
-          next.style.opacity = 1;
-          current.style.opacity = 0;
-          next.dataset.src = newSrc;
-
-          // Pause the old video after crossfade
-          setTimeout(() => {
-            current.pause();
-          }, 500); // match CSS transition
-
-          active = 1 - active;
-        };
-
-        next.onended = switchVideo;
-      }
-
-      // Initial setup
-      videos[0].style.opacity = 1;
-      videos[1].style.opacity = 0;
-      const initialSrc = getRandomVideo();
-      videos[0].src = initialSrc;
-      videos[0].dataset.src = initialSrc;
-
-      videos[0].onloadedmetadata = () => {
-        const segment = getRandomSegment(videos[0].duration);
-        videos[0].currentTime = segment.start;
-        videos[0].play();
-      };
-
-      videos[0].onended = switchVideo;
-    }
-
-    document.querySelectorAll(".video-column").forEach(playVideoWithFade);
-  </script>
 </body>
 </html>
